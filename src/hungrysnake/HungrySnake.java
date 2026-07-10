@@ -31,15 +31,20 @@ public class HungrySnake extends Application {
     @Override
     public void start(Stage stage) {
        Pane root=new Pane();
+       //Snake Structure
        Rectangle snake=new Rectangle(20,20);
        snake.setX(100);
        snake.setY(100);
        snake.setFill(Color.GREEN);
        root.getChildren().add(snake);
-       x=100;
-       y=100;
        
-       
+       //Food Structure
+      Rectangle food=new Rectangle(20,20);
+      food.setFill(Color.RED);
+      food.setX(300);
+      food.setY(200);
+      root.getChildren().add(food);
+      
        Timeline timeline=new Timeline(new KeyFrame(Duration.millis(200),e->{
           
            snake.setX(x);
@@ -52,6 +57,9 @@ public class HungrySnake extends Application {
                y-=20;
            if(direction.equals("DOWN"))
                y+=20;
+          if(x==food.getX() && y==food.getY()){
+              System.out.println("Food Eaten");
+          }
        }));
        timeline.setCycleCount(Timeline.INDEFINITE);
        timeline.play();
