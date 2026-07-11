@@ -7,6 +7,8 @@ package hungrysnake;
 
 
 import static java.lang.reflect.Array.set;
+import java.util.ArrayList;
+import java.util.Random;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 
@@ -19,6 +21,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -32,11 +35,11 @@ public class HungrySnake extends Application {
     public void start(Stage stage) {
        Pane root=new Pane();
        //Snake Structure
-       Rectangle snake=new Rectangle(20,20);
-       snake.setX(100);
-       snake.setY(100);
-       snake.setFill(Color.GREEN);
-       root.getChildren().add(snake);
+       Rectangle head=new Rectangle(20,20);
+       head.setX(100);
+       head.setY(100);
+       head.setFill(Color.GREEN);
+       root.getChildren().add(head);
        
        //Food Structure
       Rectangle food=new Rectangle(20,20);
@@ -45,10 +48,26 @@ public class HungrySnake extends Application {
       food.setY(200);
       root.getChildren().add(food);
       
+      //For hold the snake's body we should use array list
+      ArrayList<Rectangle>snake=new ArrayList<>();
+      snake.add(head);
+      
+      
+      
+      //For snake's food position
+      Random random=new Random();
+      
+      
        Timeline timeline=new Timeline(new KeyFrame(Duration.millis(200),e->{
+           for(int i=snake.size()-1;i>0;i--){
+               snake.get(i).setX(snake.get(i-1).getX());
+               snake.get(i).setY(snake.get(i-1).getY());
+           }
           
-           snake.setX(x);
-           snake.setY(y);
+           head.setX(x);
+           head.setY(y);
+           
+           
            if (direction.equals("RIGHT"))
                    x+=20;
            if(direction.equals("LEFT"))
@@ -59,6 +78,19 @@ public class HungrySnake extends Application {
                y+=20;
           if(x==food.getX() && y==food.getY()){
               System.out.println("Food Eaten");
+              //If snake will eat the food, then the position of next food will be changed
+              int foodX=random.nextInt(30)*20;
+              int foodY=random.nextInt(30)*20;
+              food.setX(foodX);
+              food.setY(foodY);
+              
+              //Snake's body create after eating food
+              Rectangle body=new Rectangle(20,20);
+              body.setFill(Color.GREEN);
+              body.setX(snake.get(snake.size()-1).getX());
+              body.setY(snake.get(snake.size()-1).getY());
+              snake.add(body);
+              root.getChildren().add(body);
           }
        }));
        timeline.setCycleCount(Timeline.INDEFINITE);
