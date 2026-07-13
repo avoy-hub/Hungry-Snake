@@ -23,6 +23,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -31,9 +33,22 @@ public class HungrySnake extends Application {
     int x=100;
     int y=100;
     String direction="RIGHT";
+    
+     int foodX=300;
+       int foodY=200;
     @Override
     public void start(Stage stage) {
        Pane root=new Pane();
+       root.setStyle("-fx-background-color:BLACK;");
+       
+       //Show gameover
+       Text gameOver=new Text("GAME OVER");
+       gameOver.setFont(Font.font(50));
+       gameOver.setFill(Color.RED);
+       gameOver.setX(160);
+       gameOver.setY(200);
+       gameOver.setVisible(false);
+       root.getChildren().add(gameOver);
        //Snake Structure
        Rectangle head=new Rectangle(20,20);
        head.setX(100);
@@ -67,6 +82,22 @@ public class HungrySnake extends Application {
            head.setX(x);
            head.setY(y);
            
+           //Game over condition: Wall collison and self collison
+           
+           //For Wall collison:
+           if(x<0 || x>600 || y<0 ||y>400){
+               System.out.println("Game Over");
+               gameOver.setVisible(true);
+               ((Timeline)e.getSource()).stop();
+           }
+           //For body collision:
+           for(int i=1;i<snake.size();i++){
+               if(x==snake.get(i).getX() && y==snake.get(i).getY()){
+                   System.out.println("Game over");
+                   gameOver.setVisible(true);
+                   ((Timeline)e.getSource()).stop();
+               }
+           }
            
            if (direction.equals("RIGHT"))
                    x+=20;
@@ -79,8 +110,8 @@ public class HungrySnake extends Application {
           if(x==food.getX() && y==food.getY()){
               System.out.println("Food Eaten");
               //If snake will eat the food, then the position of next food will be changed
-              int foodX=random.nextInt(30)*20;
-              int foodY=random.nextInt(30)*20;
+              foodX=random.nextInt(30)*20;
+               foodY=random.nextInt(20)*20;
               food.setX(foodX);
               food.setY(foodY);
               
