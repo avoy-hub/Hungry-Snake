@@ -36,6 +36,11 @@ public class HungrySnake extends Application {
     
      int foodX=300;
        int foodY=200;
+       
+       //For special food
+       int specialFoodX;
+       int specialFoodY;
+       boolean isSpecialFoodEaten=false;
     @Override
     public void start(Stage stage) {
        Pane root=new Pane();
@@ -62,6 +67,12 @@ public class HungrySnake extends Application {
       food.setX(300);
       food.setY(200);
       root.getChildren().add(food);
+      
+      //For special food
+      Rectangle specialFood=new Rectangle(20,20);
+      specialFood.setFill(Color.YELLOW);
+      specialFood.setVisible(false);
+      root.getChildren().add(specialFood);
       
       //For hold the snake's body we should use array list
       ArrayList<Rectangle>snake=new ArrayList<>();
@@ -122,6 +133,32 @@ public class HungrySnake extends Application {
               body.setY(snake.get(snake.size()-1).getY());
               snake.add(body);
               root.getChildren().add(body);
+              
+              //For special Food logic
+              if(!isSpecialFoodEaten && random.nextInt(5)==0){
+                  specialFoodX=random.nextInt(30)*20;
+                  specialFoodY=random.nextInt(20)*20;
+                  specialFood.setX(specialFoodX);
+                  specialFood.setY(specialFoodY);
+                  specialFood.setVisible(true);
+                  isSpecialFoodEaten=true;
+              }
+          }
+          //After eating special food
+          if(isSpecialFoodEaten && x==specialFood.getX() && y==specialFood.getY()){
+              System.out.println("Special food eaten!");
+              specialFood.setVisible(false);
+              isSpecialFoodEaten=false;
+              
+              //Two body parts included after eating special food
+              for(int k=0;k<2;k++){
+                   Rectangle body=new Rectangle(20,20);
+                   body.setFill(Color.GREEN);
+                    body.setX(snake.get(snake.size()-1).getX());
+              body.setY(snake.get(snake.size()-1).getY());
+              snake.add(body);
+              root.getChildren().add(body);
+              }
           }
        }));
        timeline.setCycleCount(Timeline.INDEFINITE);
