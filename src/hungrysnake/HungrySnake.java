@@ -30,6 +30,7 @@ import javafx.util.Duration;
 
 
 public class HungrySnake extends Application {
+    Timeline timeline;
     int x=100;
     int y=100;
     String direction="RIGHT";
@@ -41,6 +42,12 @@ public class HungrySnake extends Application {
        int specialFoodX;
        int specialFoodY;
        boolean isSpecialFoodEaten=false;
+       
+       //For special food timer
+       int specialFoodTimer=0;
+       
+       //if we miss to eat special food
+       int count=0;
     @Override
     public void start(Stage stage) {
        Pane root=new Pane();
@@ -62,14 +69,14 @@ public class HungrySnake extends Application {
        root.getChildren().add(head);
        
        //Food Structure
-      Rectangle food=new Rectangle(20,20);
+      Circle food=new Circle(10);
       food.setFill(Color.RED);
-      food.setX(300);
-      food.setY(200);
+      food.setCenterX(300+10);
+      food.setCenterY(200+10);
       root.getChildren().add(food);
       
       //For special food
-      Rectangle specialFood=new Rectangle(20,20);
+      Circle specialFood=new Circle(10);
       specialFood.setFill(Color.YELLOW);
       specialFood.setVisible(false);
       root.getChildren().add(specialFood);
@@ -84,7 +91,24 @@ public class HungrySnake extends Application {
       Random random=new Random();
       
       
-       Timeline timeline=new Timeline(new KeyFrame(Duration.millis(200),e->{
+        timeline=new Timeline(new KeyFrame(Duration.millis(200),e->{
+           
+           //First check the condition whether special food is here or not.If yes,Then decrese the timer using this condition
+           if(isSpecialFoodEaten){
+               specialFoodTimer--;
+           
+           if(specialFoodTimer<=0){
+               specialFood.setVisible(false);
+               isSpecialFoodEaten=false;
+               count++;
+               System.out.println("Special food missed");
+               if(count>=3){
+                   System.out.println("Game Over");
+                   gameOver.setVisible(true);
+                   timeline.stop();
+               }
+           }
+           }
            for(int i=snake.size()-1;i>0;i--){
                snake.get(i).setX(snake.get(i-1).getX());
                snake.get(i).setY(snake.get(i-1).getY());
@@ -99,14 +123,14 @@ public class HungrySnake extends Application {
            if(x<0 || x>600 || y<0 ||y>400){
                System.out.println("Game Over");
                gameOver.setVisible(true);
-               ((Timeline)e.getSource()).stop();
+               timeline.stop();
            }
            //For body collision:
            for(int i=1;i<snake.size();i++){
                if(x==snake.get(i).getX() && y==snake.get(i).getY()){
                    System.out.println("Game over");
                    gameOver.setVisible(true);
-                   ((Timeline)e.getSource()).stop();
+                   timeline.stop();
                }
            }
            
@@ -118,13 +142,13 @@ public class HungrySnake extends Application {
                y-=20;
            if(direction.equals("DOWN"))
                y+=20;
-          if(x==food.getX() && y==food.getY()){
+          if(x==(food.getCenterX()-10) && y==(food.getCenterY()-10)){
               System.out.println("Food Eaten");
               //If snake will eat the food, then the position of next food will be changed
               foodX=random.nextInt(30)*20;
                foodY=random.nextInt(20)*20;
-              food.setX(foodX);
-              food.setY(foodY);
+              food.setCenterX(foodX+10);
+              food.setCenterY(foodY+10);
               
               //Snake's body create after eating food
               Rectangle body=new Rectangle(20,20);
@@ -135,17 +159,19 @@ public class HungrySnake extends Application {
               root.getChildren().add(body);
               
               //For special Food logic
-              if(!isSpecialFoodEaten && random.nextInt(5)==0){
+              if(!isSpecialFoodEaten && random.nextInt(2)==0){
                   specialFoodX=random.nextInt(30)*20;
                   specialFoodY=random.nextInt(20)*20;
-                  specialFood.setX(specialFoodX);
-                  specialFood.setY(specialFoodY);
+                  specialFood.setCenterX(specialFoodX+10);
+                  specialFood.setCenterY(specialFoodY+10);
                   specialFood.setVisible(true);
                   isSpecialFoodEaten=true;
+                  specialFoodTimer=30;
               }
+              
           }
           //After eating special food
-          if(isSpecialFoodEaten && x==specialFood.getX() && y==specialFood.getY()){
+          if(isSpecialFoodEaten && x==(specialFood.getCenterX()-10) && y==(specialFood.getCenterY()-10)){
               System.out.println("Special food eaten!");
               specialFood.setVisible(false);
               isSpecialFoodEaten=false;
