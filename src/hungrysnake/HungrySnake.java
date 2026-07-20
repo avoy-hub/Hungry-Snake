@@ -15,11 +15,13 @@ import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
@@ -50,8 +52,50 @@ public class HungrySnake extends Application {
        int count=0;
     @Override
     public void start(Stage stage) {
-       Pane root=new Pane();
+        
+        Pane root=new Pane();
        root.setStyle("-fx-background-color:BLACK;");
+       
+       VBox startMenu=new VBox(20);
+       startMenu.setAlignment(Pos.CENTER);
+       startMenu.setLayoutX(200);
+       startMenu.setLayoutY(150);
+       Button playBtn=new Button("Play Game");
+       playBtn.setStyle("-fx-font-size:20px;-fx-padding:12px 30px");
+       startMenu.getChildren().add(playBtn);
+       startMenu.setVisible(true);
+       
+       
+       playBtn.setOnAction(e->{
+           startMenu.setVisible(false);
+           timeline.play();
+       });
+       
+       VBox menu=new VBox(20);
+       menu.setLayoutX(200);
+       menu.setLayoutY(150);
+       Button resumeBtn=new Button("Resume");
+       resumeBtn.setStyle("-fx-font-size:20px;-fx-padding:12px 30px;");
+       Button restartBtn=new Button("Restart");
+       restartBtn.setStyle("-fx-font-size:20px;-fx-padding:12px 30px;");
+       Button exitBtn=new Button("Exit");
+       exitBtn.setStyle("-fx-font-size:20px;-fx-padding:12px 30px;");
+       menu.getChildren().addAll(resumeBtn,restartBtn,exitBtn);
+       menu.setVisible(false);
+       
+       resumeBtn.setOnAction(e->{
+           menu.setVisible(false);
+           timeline.play();
+       });
+       restartBtn.setOnAction(e->{
+           menu.setVisible(false);
+           timeline.play();
+       });
+       exitBtn.setOnAction(e->{
+          System.exit(0);
+       });
+       root.getChildren().addAll(startMenu,menu);
+      startMenu.toFront();
        
        //Show gameover
        Text gameOver=new Text("GAME OVER");
@@ -67,6 +111,11 @@ public class HungrySnake extends Application {
        head.setY(100);
        head.setFill(Color.GREEN);
        root.getChildren().add(head);
+       
+       //For snake's eye
+       Circle leftEye=new Circle(3,Color.BLACK);
+       Circle rightEye=new Circle(3,Color.BLACK);
+       root.getChildren().addAll(leftEye,rightEye);
        
        //Food Structure
       Circle food=new Circle(10);
@@ -117,6 +166,38 @@ public class HungrySnake extends Application {
            head.setX(x);
            head.setY(y);
            
+           //For set the eye position with change the direction
+           if(direction.equals("RIGHT")){
+               //If snake's go to the right
+           leftEye.setCenterX(x+15);
+           leftEye.setCenterY(y+5);
+           rightEye.setCenterX(x+15);
+           rightEye.setCenterY(y+15);
+           }
+           
+           else if(direction.equals("LEFT")){
+               //If snake's go to the left
+           leftEye.setCenterX(x+5);
+           leftEye.setCenterY(y+5);
+           rightEye.setCenterX(x+5);
+           rightEye.setCenterY(y+15);
+           }
+            
+            else if(direction.equals("UP")){
+               //If snake's go to the up
+           leftEye.setCenterX(x+5);
+           leftEye.setCenterY(y+5);
+           rightEye.setCenterX(x+15);
+           rightEye.setCenterY(y+5);
+           }
+             
+             else if(direction.equals("DOWN")){
+               //If snake's go to the down
+           leftEye.setCenterX(x+5);
+           leftEye.setCenterY(y+15);
+           rightEye.setCenterX(x+15);
+           rightEye.setCenterY(y+15);
+           }
            //Game over condition: Wall collison and self collison
            
            //For Wall collison:
@@ -166,7 +247,7 @@ public class HungrySnake extends Application {
                   specialFood.setCenterY(specialFoodY+10);
                   specialFood.setVisible(true);
                   isSpecialFoodEaten=true;
-                  specialFoodTimer=30;
+                  specialFoodTimer=50;
               }
               
           }
@@ -188,12 +269,17 @@ public class HungrySnake extends Application {
           }
        }));
        timeline.setCycleCount(Timeline.INDEFINITE);
-       timeline.play();
+       //timeline.play();
        Scene scene=new Scene(root,600,400);
         stage.setTitle("Hungry Snake");
         stage.setScene(scene);
         stage.show();
        scene.setOnKeyPressed(e->{
+           if(e.getCode()==KeyCode.P){
+               menu.setVisible(true);
+               menu.toFront();
+               timeline.pause();
+           }
            if(e.getCode()==KeyCode.UP)
                direction="UP";
            if(e.getCode()==KeyCode.DOWN)
@@ -204,7 +290,7 @@ public class HungrySnake extends Application {
                direction="RIGHT";
        });
       
-       
+       stage.show();
       
     }
 
