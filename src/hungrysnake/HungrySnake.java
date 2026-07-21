@@ -18,7 +18,9 @@ import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -26,6 +28,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -56,61 +59,36 @@ public class HungrySnake extends Application {
         Pane root=new Pane();
        root.setStyle("-fx-background-color:BLACK;");
        
-       VBox startMenu=new VBox(20);
-       startMenu.setAlignment(Pos.CENTER);
-       startMenu.setLayoutX(200);
-       startMenu.setLayoutY(150);
-       Button playBtn=new Button("Play Game");
-       playBtn.setStyle("-fx-font-size:20px;-fx-padding:12px 30px");
-       startMenu.getChildren().add(playBtn);
-       startMenu.setVisible(true);
+       VBox gameOver=new VBox(20);
+       gameOver.setAlignment(Pos.CENTER);
+       gameOver.setStyle("-fx-background-color:white;-fx-padding:25px 40px;");
+       gameOver.setLayoutX(170);
+       gameOver.setLayoutY(130);
+       Text gameText=new Text("GAME OVER");
+       gameText.setFont(Font.font("Arial",FontWeight.BOLD,40));
+       gameText.setFill(Color.RED);
        
+       Button tryBtn=new Button("Try Again");
+       tryBtn.setStyle("-fx-font-size:16px;-fx-font-weight:bold;-fx-text-fill:black;");
+       Button exitgameBtn=new Button("Exit");
+       exitgameBtn.setStyle("-fx-font-size:16px;-fx-font-weight:bold;-fx-text-fill:red;");
        
-       playBtn.setOnAction(e->{
-           startMenu.setVisible(false);
-           timeline.play();
-       });
+     
        
-       VBox menu=new VBox(20);
-       menu.setLayoutX(200);
-       menu.setLayoutY(150);
-       Button resumeBtn=new Button("Resume");
-       resumeBtn.setStyle("-fx-font-size:20px;-fx-padding:12px 30px;");
-       Button restartBtn=new Button("Restart");
-       restartBtn.setStyle("-fx-font-size:20px;-fx-padding:12px 30px;");
-       Button exitBtn=new Button("Exit");
-       exitBtn.setStyle("-fx-font-size:20px;-fx-padding:12px 30px;");
-       menu.getChildren().addAll(resumeBtn,restartBtn,exitBtn);
-       menu.setVisible(false);
-       
-       resumeBtn.setOnAction(e->{
-           menu.setVisible(false);
-           timeline.play();
-       });
-       restartBtn.setOnAction(e->{
-           menu.setVisible(false);
-           timeline.play();
-       });
-       exitBtn.setOnAction(e->{
-          System.exit(0);
-       });
-       root.getChildren().addAll(startMenu,menu);
-      startMenu.toFront();
-       
-       //Show gameover
-       Text gameOver=new Text("GAME OVER");
-       gameOver.setFont(Font.font(50));
-       gameOver.setFill(Color.RED);
-       gameOver.setX(160);
-       gameOver.setY(200);
+       HBox buttonBox=new HBox(20);
+       buttonBox.setAlignment(Pos.CENTER);
+       buttonBox.getChildren().addAll(tryBtn,exitgameBtn);
+       gameOver.getChildren().addAll(gameText,buttonBox);
        gameOver.setVisible(false);
        root.getChildren().add(gameOver);
+       
        //Snake Structure
        Rectangle head=new Rectangle(20,20);
        head.setX(100);
        head.setY(100);
        head.setFill(Color.GREEN);
        root.getChildren().add(head);
+       
        
        //For snake's eye
        Circle leftEye=new Circle(3,Color.BLACK);
@@ -129,15 +107,104 @@ public class HungrySnake extends Application {
       specialFood.setFill(Color.YELLOW);
       specialFood.setVisible(false);
       root.getChildren().add(specialFood);
-      
-      //For hold the snake's body we should use array list
-      ArrayList<Rectangle>snake=new ArrayList<>();
+       
+       VBox startMenu=new VBox(20);
+       startMenu.setAlignment(Pos.CENTER);
+       startMenu.setLayoutX(200);
+       startMenu.setLayoutY(150);
+       
+       //For hold the snake's body we should use array list
+         ArrayList<Rectangle>snake=new ArrayList<>();
       snake.add(head);
-      
-      
-      
-      //For snake's food position
+        //For snake's food position
       Random random=new Random();
+      
+      
+        tryBtn.setOnAction(e->{
+            for(int i=1;i<snake.size();i++){
+                root.getChildren().remove(snake.get(i));
+            }
+            snake.clear();
+            snake.add(head);
+           x=100;
+           y=100;
+           head.setX(x);
+           head.setY(y);
+           direction="RIGHT";
+            foodX=random.nextInt(30)*20;
+               foodY=random.nextInt(20)*20;
+              food.setCenterX(foodX+10);
+              food.setCenterY(foodY+10);
+              
+           count=0;
+           gameOver.setVisible(false);
+           timeline.playFromStart();
+       });
+       
+       exitgameBtn.setOnAction(e->{
+           System.exit(0);
+        
+       });
+
+       
+       Label gameTitle=new Label("HUNGRY SNAKE");
+       gameTitle.setStyle("-fx-font-size:32px;-fx-font-weight:bold;-fx-text-fill:white;");
+       Button playBtn=new Button("Play");
+       playBtn.setStyle("-fx-font-size:20px;-fx-font-weight:bold;-fx-text-fill:black;");
+       startMenu.getChildren().addAll(gameTitle,playBtn);
+       startMenu.setVisible(true);
+       
+       
+       playBtn.setOnAction(e->{
+           
+           for(int i=1;i<snake.size();i++){
+                root.getChildren().remove(snake.get(i));
+            }
+           snake.clear();
+           snake.add(head);
+            x=100;
+           y=100;
+           head.setX(x);
+           head.setY(y);
+           direction="RIGHT";
+            foodX=random.nextInt(30)*20;
+               foodY=random.nextInt(20)*20;
+              food.setCenterX(foodX+10);
+              food.setCenterY(foodY+10);
+              
+           count=0;
+           startMenu.setVisible(false);
+           gameOver.setVisible(false);
+           timeline.playFromStart();
+       });
+       
+       VBox menu=new VBox(20);
+       menu.setLayoutX(200);
+       menu.setLayoutY(150);
+       Button resumeBtn=new Button("Resume");
+       resumeBtn.setStyle("-fx-font-size:20px;-fx-font-weight:bold;-fx-padding:12px 30px;");
+       Button restartBtn=new Button("Restart");
+       restartBtn.setStyle("-fx-font-size:20px;-fx-font-weight:bold;-fx-padding:12px 30px;");
+       Button exitBtn=new Button("Exit");
+       exitBtn.setStyle("-fx-font-size:20px;-fx-font-weight:bold;-fx-padding:12px 30px;");
+       menu.getChildren().addAll(resumeBtn,restartBtn,exitBtn);
+       menu.setVisible(false);
+       
+       resumeBtn.setOnAction(e->{
+           menu.setVisible(false);
+           timeline.play();
+       });
+       restartBtn.setOnAction(e->{
+           menu.setVisible(false);
+           timeline.play();
+       });
+       exitBtn.setOnAction(e->{
+          System.exit(0);
+       });
+       root.getChildren().addAll(startMenu,menu);
+      startMenu.toFront();
+      
+   
       
       
         timeline=new Timeline(new KeyFrame(Duration.millis(200),e->{
@@ -204,6 +271,7 @@ public class HungrySnake extends Application {
            if(x<0 || x>600 || y<0 ||y>400){
                System.out.println("Game Over");
                gameOver.setVisible(true);
+               gameOver.toFront();
                timeline.stop();
            }
            //For body collision:
@@ -211,6 +279,7 @@ public class HungrySnake extends Application {
                if(x==snake.get(i).getX() && y==snake.get(i).getY()){
                    System.out.println("Game over");
                    gameOver.setVisible(true);
+                   gameOver.toFront();
                    timeline.stop();
                }
            }
